@@ -7,7 +7,7 @@
 #include "control/pid_input.h"
 #define dataSize (1081)
 #define validSize (150) 
-#define ratio (7.525)//(7.525)
+#define ratio (1)//(7.525)
 typedef struct
 {
 	double x,y;
@@ -145,8 +145,8 @@ void callback(const sensor_msgs::LaserScan::ConstPtr& msg)
 	
 	
 	pid_error.pid_error =(error.dist/ratio+error.ang/45*1.5)*100;
-	pid_error.pid_vel = 30;
-	if (pid_error.pid_vel<10) pid_error.pid_vel=10;
+	pid_error.pid_vel = 9*ratio;
+	if (pid_error.pid_vel<2*ratio) pid_error.pid_vel=2*ratio;
 
 	pub.publish(side);
 	pubError.publish(error);
