@@ -145,7 +145,7 @@ void callback(const sensor_msgs::LaserScan::ConstPtr& msg)
 	
 	
 	pid_error.pid_error =(error.dist/ratio+error.ang/45*1.5)*100;
-	pid_error.pid_vel = 50;
+	pid_error.pid_vel = 30;
 	if (pid_error.pid_vel<10) pid_error.pid_vel=10;
 
 	pub.publish(side);
