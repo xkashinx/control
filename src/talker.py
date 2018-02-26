@@ -5,6 +5,7 @@ from control.msg import drive_values
 from control.msg import drive_param
 from std_msgs.msg import Bool
 
+ang_bias = 300 # pwm bias to correct steering angle
 pub = rospy.Publisher('drive_pwm', drive_values, queue_size=10)
 em_pub = rospy.Publisher('eStop', Bool, queue_size=10)
 
@@ -19,7 +20,7 @@ def callback(data):
 	print("Velocity: ",velocity,"Angle: ",angle)
 	# Do the computation
 	pwm1 = arduino_map(velocity,-100,100,6554,13108);
-	pwm2 = arduino_map(angle,-100,100,6554,13108);
+	pwm2 = arduino_map(angle,-100,100,6554+ang_bias,13108+ang_bias);
 	msg = drive_values()
 	msg.pwm_drive = pwm1
 	msg.pwm_angle = pwm2
