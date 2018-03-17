@@ -7,7 +7,7 @@
 #include "control/pid_input.h"
 #define dataSize (1081)
 #define validSize (150) 
-#define ratio (1)//(7.525)
+#define ratio (7.525)//(7.525)
 typedef struct
 {
 	double x,y;
@@ -146,6 +146,7 @@ void callback(const sensor_msgs::LaserScan::ConstPtr& msg)
 	
 	pid_error.pid_error =(error.dist/ratio+error.ang/45*1.5)*100;
 	pid_error.pid_vel = 9*ratio;
+	if (ratio >= 1.1 && pid_error.pid_vel > 50.0) pid_error.pid_vel = 50.0; // don't let vehicle overturn 
 	if (pid_error.pid_vel<2*ratio) pid_error.pid_vel=2*ratio;
 
 	pub.publish(side);
@@ -158,8 +159,8 @@ int main(int argc, char ** argv)
 	ros::init(argc,argv,"side_way_controller");
 	ROS_INFO("Side Way Finder Start");
 	ros::NodeHandle rosHandle;
-	// ros::Subscriber sub = rosHandle.subscribe("catvehicle/front_laser_points",100,callback);
-	ros::Subscriber sub = rosHandle.subscribe("/scan", 100, callback);
+	ros::Subscriber sub = rosHandle.subscribe("catvehicle/front_laser_points",100,callback);
+	// ros::Subscriber sub = rosHandle.subscribe("/scan", 100, callback);
 	pub = rosHandle.advertise<control::sideWay>("control/sideWay",100);
 	pubError = rosHandle.advertise<control::angleDistanceError>("control/angleDistanceError",100);	
 	pub2Python = rosHandle.advertise<control::pid_input>("control/error",100);
