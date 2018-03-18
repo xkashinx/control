@@ -15,7 +15,7 @@ pub = rospy.Publisher('control/go', Bool, queue_size=10)
 stdscr.refresh()
 
 key = ''
-stdscr.addstr(2, 5, "Car Status:      GO!   ")
+stdscr.addstr(2, 5, "Car Status:     N/A    ")
 stdscr.addstr(5, 5, "Key: G=Go S=Stop Q=Quit")
 while key != ord('q'):
 	key = stdscr.getch()
