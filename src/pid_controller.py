@@ -3,52 +3,44 @@
 import rospy
 from control.msg import drive_param
 from control.msg import pid_input
+from std_msgs.msg import Bool
 
-kp = 3
-kd = 0.05
-servo_offset = 18.5
-prev_error = 0.0 
-vel_input = 30
+class Pid(object):
+	def __init__(self):
+		# Params
+		self.kp = 3
+		self.kd = 0.05
+		self.prev_error = 0.0
+		self.go = True
 
-pub = rospy.Publisher('control/drive_parameters', drive_param, queue_size=1)
+		# Publisher
+		self.pub = rospy.Publisher('control/drive_parameters', drive_param, queue_size=1)
 
-def control(data):
-	global prev_error
-	global vel_input
-	global kp
-	global kd
+		# Subscribers
+		rospy.Subscriber('control/error', pid_input, self.control)
+		rospy.Subscriber('control/go', Bool, self.go_callback)
 
-	## Your code goes here
-	# 1. Scale the error
-	# 2. Apply the PID equation on error
-	# 3. Make sure the error is within bounds
- 	
+		rospy.loginfo("Started pic_controller\nListening to /control/error and /control/go")
+		rospy.spin()
 
-	## END
+	def control(self, data):
+		msg = drive_param()
+		msg.velocity = data.pid_vel
+		error = data.pid_error
+		angle_p = error * self.kp
+		angle_d = self.kd * (error-self.prev_error)
+		angle = angle_p+angle_d
+		self.prev_error = error
+		msg.angle = angle
+		if not self.go:
+			msg.velocity = 0.0
+		self.pub.publish(msg)
+		rospy.loginfo("\nvel: %.0lf\ngo: %i", msg.velocity, self.go)
 
-	msg = drive_param();
-	msg.velocity = data.pid_vel
-	error=data.pid_error
-	angle_p=error*kp
-	angle_d=kd*(error-prev_error)
-	angle=angle_p+angle_d	
-	prev_error=error
-	msg.angle = angle
-	pub.publish(msg)
-
+	def go_callback(self, msg):
+		self.go = msg.data
+		rospy.loginfo("\nEntered go_callback\ngo: %i", self.go)
 
 if __name__ == '__main__':
-	global kp
-	global kd
-	global vel_input
-	print("Listening to error for PID")
-	kp = 3
-	kd = 0.05
-	vel_input = 30
-
-	#kp = input("Enter Kp Value: ")
-	#kd = input("Enter Kd Value: ")
-	#vel_input = input("Enter Velocity: ")
 	rospy.init_node('pid_controller', anonymous=True)
-	rospy.Subscriber("control/error", pid_input, control)
-	rospy.spin()
+	my_node = Pid()
