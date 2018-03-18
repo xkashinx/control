@@ -24,6 +24,15 @@ class Pid(object):
 		rospy.spin()
 
 	def control(self, data):
+		## Your code goes here
+		# 1. Scale the error
+		# 2. Apply the PID equation on error
+		# 3. Make sure the error is within bounds
+
+
+
+
+
 		msg = drive_param()
 		msg.velocity = data.pid_vel
 		error = data.pid_error
