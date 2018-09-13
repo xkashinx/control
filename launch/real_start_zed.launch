@@ -1,11 +1,10 @@
 <launch>
 
-
+<include file="$(find zed_wrapper)/launch/zed_custom_vga.launch" />
 <node name="hokuyo" type="urg_node" pkg="urg_node" args="_ip_address:=192.168.0.10 _publish_intensity:=false" />
 <node name="serial_node" pkg="rosserial_python" type="serial_node.py" args="/dev/ttyACM0" />
 <node name="sideWayFinder" pkg="control" type="sideWayFinder" output="log"/>
 <node name="pid_controller" pkg="control" type="pid_controller.py"/>
 <node name="talker" pkg="control" type="talker.py"/>
-<node name="goStop" pkg="control" type="goStop.py" output="screen" launch-prefix="xterm -e" />
 
 </launch>

@@ -8,8 +8,8 @@ from std_msgs.msg import Bool
 class Pid(object):
 	def __init__(self):
 		# Params
-		self.kp = 3
-		self.kd = 0.05
+		self.kp = 2
+		self.kd = 0.1
 		self.prev_error = 0.0
 		self.go = True
 
@@ -20,7 +20,7 @@ class Pid(object):
 		rospy.Subscriber('control/error', pid_input, self.control)
 		rospy.Subscriber('control/go', Bool, self.go_callback)
 
-		rospy.loginfo("Started pic_controller\nListening to /control/error and /control/go")
+		rospy.loginfo("Started pid_controller\nListening to /control/error and /control/go")
 		rospy.spin()
 
 	def control(self, data):
